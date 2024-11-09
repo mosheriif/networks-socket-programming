@@ -58,6 +58,6 @@ def start():
 
         active = [t for t in active if t.is_alive()]
         thread.start()
-        print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
+        print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
 
 start()
