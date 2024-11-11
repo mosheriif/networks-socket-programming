@@ -1,4 +1,5 @@
 import time
+import socket
 import requests
 from concurrent.futures import ThreadPoolExecutor
 import matplotlib.pyplot as plt
@@ -10,7 +11,9 @@ def fetch_url(url):
     return end_time - start_time
 
 def main():
-    url = "http://192.168.1.8:5050/index.html"
+    ip = socket.gethostbyname(socket.gethostname())
+    port = 5050
+    url = f"http://{ip}:{port}/index.html"
     num_requests_list = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
     num_clients = 100
     response_times = []

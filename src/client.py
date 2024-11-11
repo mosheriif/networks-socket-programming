@@ -1,25 +1,33 @@
 import socket
 import sys
 import time
-import webbrowser
+import os
 
 FORMAT = 'utf-8'
 BUFFER_SIZE = 1024
+DATA_FOLDER = 'data'  # Folder to store downloaded files
 
 def connect_to_server(commands, host, port):
-    # Resolve the host name to an IP address
-    host = socket.gethostbyname(host)
-    address = (host, port)
-
-    # Create a socket and connect to the server
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(address)
-
-    # Send the commands to the server
     for command in commands:
-        send_request(client, command[0], command[1], host)
-    # Close the socket connection
-    client.close()
+        try:
+            # Resolve the host name to an IP address
+            host_ip = socket.gethostbyname(host)
+            address = (host_ip, port)
+
+            # Create a socket and connect to the server
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client.connect(address)
+
+            # Send the command to the server
+            send_request(client, command[0], command[1], host)
+
+            # Close the socket connection
+            client.close()
+
+            # Add a delay between requests
+            time.sleep(1)
+        except Exception as e:
+            print(f"Error occurred: {e}")
 
 def send_request(client, command, file_path, host):
     if command == "client_get":
@@ -33,9 +41,15 @@ def send_request(client, command, file_path, host):
             headers, body = response.split("\r\n\r\n", 1)
             print(headers)
 
-            local_file_path = file_path.split('/')[-1]
+            local_file_path = os.path.join(DATA_FOLDER, file_path.split('/')[-1])
             print(f"Saving response to {local_file_path}")
-            # webbrowser.open(f'http://{host}:{port}/{local_file_path}')
+
+            # Ensure the data folder exists
+            os.makedirs(DATA_FOLDER, exist_ok=True)
+
+            # Store the file in the data directory
+            with open(local_file_path, 'w') as file:
+                file.write(body)
         else:
             print("Invalid response received from the server.")
     elif command == "client_post":
