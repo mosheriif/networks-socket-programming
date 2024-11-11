@@ -42,6 +42,8 @@ def handle_client(connection, address, thread_count):
 
     except socket.timeout:
         pass
+    except ConnectionAbortedError:
+        print(f"[ERROR] Connection with {address} was aborted.")
     finally:
         connection.close()
 
